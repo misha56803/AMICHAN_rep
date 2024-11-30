@@ -5,14 +5,12 @@
 {% block content %}
 <h1>{{ thread.title }}</h1>
 <p>{{ thread.content }}</p>
-<p>Автор: {{ thread.author }}</p>
 
 <h2>Комментарии</h2>
 <ul>
     {% for comment in comments %}
         <li>
             <p>{{ comment.content }}</p>
-            <p>Автор: {{ comment.author }}</p>
         </li>
     {% endfor %}
 </ul>
