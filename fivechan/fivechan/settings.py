@@ -74,6 +74,8 @@ TEMPLATES = [
     },
 ]
 
+LOGOUT_REDIRECT_URL = '/'
+
 WSGI_APPLICATION = 'fivechan.wsgi.application'
 
 

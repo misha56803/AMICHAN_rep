@@ -8,7 +8,7 @@ from . import views
 
 def main_page(request):
     threads = Thread.objects.all().order_by('-created_at')
-    return render(request, 'forum/main_page.html', {'threads': threads})
+    return render(request, 'main_page.html', {'threads': threads})
 
 @login_required
 def thread_detail(request, thread_id):
