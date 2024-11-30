@@ -1,3 +1,8 @@
+{% extends 'base.html' %}
+
+{% block title %}Тред{% endblock %}
+
+{% block content %}
 <h1>{{ thread.title }}</h1>
 <p>{{ thread.content }}</p>
 <p>Автор: {{ thread.author }}</p>
@@ -12,8 +17,14 @@
     {% endfor %}
 </ul>
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Добавить комментарий</button>
-</form>
+<!-- Форма отображается только для авторизованных пользователей -->
+{% if user.is_authenticated %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Добавить комментарий</button>
+    </form>
+{% else %}
+    <p>Вы должны <a href="{% url 'login' %}">войти</a>, чтобы оставить комментарий.</p>
+{% endif %}
+{% endblock %}

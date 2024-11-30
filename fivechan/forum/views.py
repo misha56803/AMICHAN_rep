@@ -10,12 +10,12 @@ def main_page(request):
     threads = Thread.objects.all().order_by('-created_at')
     return render(request, 'main_page.html', {'threads': threads})
 
-@login_required
 def thread_detail(request, thread_id):
     thread = get_object_or_404(Thread, id=thread_id)
     comments = thread.comments.all().order_by('created_at')
 
-    if request.method == 'POST':
+    # Обработка комментариев только для авторизованных пользователей
+    if request.method == 'POST' and request.user.is_authenticated:
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
@@ -26,7 +26,12 @@ def thread_detail(request, thread_id):
     else:
         form = CommentForm()
 
-    return render(request, 'forum/thread_detail.html', {'thread': thread, 'comments': comments, 'form': form})
+    return render(request, 'forum/thread_detail.html', {
+        'thread': thread,
+        'comments': comments,
+        'form': form,
+    })
+
 
 @login_required
 def create_thread(request):
