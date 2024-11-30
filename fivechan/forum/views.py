@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+
 from .models import Thread, Comment
 from .forms import ThreadForm, CommentForm
+from . import views
 
 def main_page(request):
     threads = Thread.objects.all().order_by('-created_at')
@@ -38,3 +41,13 @@ def create_thread(request):
         form = ThreadForm()
 
     return render(request, 'forum/create_thread.html', {'form': form})
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
