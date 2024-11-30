@@ -3,26 +3,36 @@
 {% block title %}Тред{% endblock %}
 
 {% block content %}
-<h1>{{ thread.title }}</h1>
-<p>{{ thread.content }}</p>
+<div class="thread">
+    <div class="thread-header">
+        <h1>{{ thread.title }}</h1>
+        <p>{{ thread.content }}</p>
+        <p>Дата создания: {{ thread.created_at }}</p>
+    </div>
+</div>
 
-<h2>Комментарии</h2>
-<ul>
+<div class="comments-section">
+    <h2>Комментарии</h2>
     {% for comment in comments %}
-        <li>
-            <p>{{ comment.content }}</p>
-        </li>
+    <div class="comment">
+        <div class="comment-header">
+            <span class="comment-date">{{ comment.created_at }}</span>
+        </div>
+        <p class="comment-text">{{ comment.content }}</p>
+    </div>
     {% endfor %}
-</ul>
+</div>
 
-<!-- Форма отображается только для авторизованных пользователей -->
 {% if user.is_authenticated %}
+<div class="comment-form">
+    <h3>Добавить комментарий</h3>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Добавить комментарий</button>
+        <button type="submit" class="btn">Добавить комментарий</button>
     </form>
+</div>
 {% else %}
-    <p>Вы должны <a href="{% url 'login' %}">войти</a>, чтобы оставить комментарий.</p>
+<p>Вы должны <a href="{% url 'login' %}">войти</a>, чтобы оставить комментарий.</p>
 {% endif %}
 {% endblock %}

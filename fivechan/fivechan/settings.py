@@ -74,7 +74,9 @@ TEMPLATES = [
     },
 ]
 
+# При входе и выходе из аккаунта автоматически отправляет на главную
 LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/'  
 
 WSGI_APPLICATION = 'fivechan.wsgi.application'
 
