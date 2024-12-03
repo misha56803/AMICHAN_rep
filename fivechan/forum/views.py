@@ -14,7 +14,6 @@ def thread_detail(request, thread_id):
     thread = get_object_or_404(Thread, id=thread_id)
     comments = thread.comments.all().order_by('created_at')
 
-    # Обработка комментариев только для авторизованных пользователей
     if request.method == 'POST' and request.user.is_authenticated:
         form = CommentForm(request.POST)
         if form.is_valid():
