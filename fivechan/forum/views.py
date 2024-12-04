@@ -1,9 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import login
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
+from django.http import HttpResponse
 
+
+from .utils import send_confirmation_email
 from .models import Thread, Comment
-from .forms import ThreadForm, CommentForm
+from .forms import ThreadForm, CommentForm, CustomUserCreationForm
 from . import views
 
 def main_page(request):
@@ -48,10 +55,28 @@ def create_thread(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('login')
+            user = form.save(commit=False)
+            user.is_active = False  # Активируем пользователя только после подтверждения
+            user.save()
+            send_confirmation_email(user, request)
+            return HttpResponse("Письмо с подтверждением отправлено на вашу почту.")
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+def confirm_email(request, uid, token):
+    try:
+        user_id = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=user_id)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        login(request, user)  # Авторизация пользователя после подтверждения
+        return redirect('main_page')
+    else:
+        return HttpResponse("Ссылка подтверждения недействительна.")

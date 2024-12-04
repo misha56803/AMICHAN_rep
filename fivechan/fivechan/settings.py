@@ -25,7 +25,13 @@ AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
 SITE_ID = 1
 
+# Настройки почты
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = False
+DEFAULT_FROM_EMAIL = 'noreply@edu.hse.ru'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
