@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from .utils import send_confirmation_email
 from .models import Thread, Comment
 from .forms import ThreadForm, CommentForm, CustomUserCreationForm
-from . import views
+
 
 def main_page(request):
     threads = Thread.objects.all().order_by('-created_at')
@@ -70,13 +70,18 @@ def confirm_email(request, uid, token):
     try:
         user_id = force_str(urlsafe_base64_decode(uid))
         user = User.objects.get(pk=user_id)
+        print(f"UID: {user_id}, Token: {token}, User: {user}")
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
+        return HttpResponse("Ссылка недействительна.")
 
     if user and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        login(request, user)  # Авторизация пользователя после подтверждения
-        return redirect('main_page')
+        print("Token is valid")
+        if not user.is_active:
+            user.is_active = True
+            user.save()
+            return HttpResponse("Ваш аккаунт подтверждён.")
+        else:
+            return HttpResponse("Аккаунт уже подтверждён.")
     else:
-        return HttpResponse("Ссылка подтверждения недействительна.")
+        print("Token is invalid")
+        return HttpResponse("Ссылка недействительна.")
