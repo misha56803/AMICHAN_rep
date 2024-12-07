@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Fivechan{% endblock %}</title>
+    <!-- Подключение CSS -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Заголовок -->
+    <header>
+        <div class="header-left">
+            <a href="{% url 'main_page' %}" class="logo">Fivechan</a>
+        </div>
+        <div class="header-right">
+            {% if user.is_authenticated %}
+                <span>Привет, {{ user.username }}!</span>
+                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn">Выйти</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn">Войти</a>
+                <a href="{% url 'register' %}" class="btn">Регистрация</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

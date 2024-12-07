@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<h2>Треды</h2>
+
+<div class="threads">
+    {% for thread in threads %}
+    <div class="thread-block">
+        <a href="{% url 'thread_detail' thread.id %}">
+            <h3 class="thread-title">{{ thread.title }}</h3>
+        </a>
+        <p class="thread-date">Создан: {{ thread.created_at }}</p>
+        <p class="thread-content">{{ thread.content|truncatechars:200 }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+{% if user.is_authenticated %}
+<a href="{% url 'create_thread' %}" class="btn">Создать новый тред</a>
+{% else %}
+<p>Вы должны <a href="{% url 'login' %}">войти</a>, чтобы создавать треды.</p>
+{% endif %}
+{% endblock %}
