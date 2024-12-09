@@ -57,9 +57,7 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.is_active = False  # Активируем пользователя только после подтверждения
-            user.save()
+            user = form.save()
             send_confirmation_email(user, request)
             return HttpResponse("Письмо с подтверждением отправлено на вашу почту.")
     else:
@@ -68,10 +66,16 @@ def register(request):
 
 def confirm_email(request, uid, token):
     try:
-        user_id = force_str(urlsafe_base64_decode(uid))
-        user = User.objects.get(pk=user_id)
-        print(f"UID: {user_id}, Token: {token}, User: {user}")
+        uid = force_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return HttpResponse("Ваш аккаунт подтверждён.")
+    else:
         return HttpResponse("Ссылка недействительна.")
 
     if user and default_token_generator.check_token(user, token):
