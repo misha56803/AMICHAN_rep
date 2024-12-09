@@ -15,19 +15,21 @@ class CommentForm(forms.ModelForm):
 
 
 class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True,  help_text="Введите почту с доменом @edu.hse.ru")
+    email = forms.EmailField(required=True, help_text="Введите адрес электронной почты с доменом @edu.hse.ru")
 
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
 
-    def save(self, commit=True):
-        email = self.cleaned_data.get("email")
-        if not email.endswith("@edu.hse.ru"):
-            raise forms.ValidationError("Регистрация доступна только с адресами @edu.hse.ru.")
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not email.endswith('@edu.hse.ru'):
+            raise forms.ValidationError("Регистрация разрешена только для адресов электронной почты с доменом @edu.hse.ru.")
+        return email
 
+    def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = email
+        user.email = self.cleaned_data['email']
         user.is_active = False  # Деактивируем пользователя до подтверждения
         if commit:
             user.save()
