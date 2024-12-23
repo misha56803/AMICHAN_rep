@@ -77,15 +77,3 @@ def confirm_email(request, uid, token):
         return HttpResponse("Ваш аккаунт подтверждён.")
     else:
         return HttpResponse("Ссылка недействительна.")
-
-    if user and default_token_generator.check_token(user, token):
-        print("Token is valid")
-        if not user.is_active:
-            user.is_active = True
-            user.save()
-            return HttpResponse("Ваш аккаунт подтверждён.")
-        else:
-            return HttpResponse("Аккаунт уже подтверждён.")
-    else:
-        print("Token is invalid")
-        return HttpResponse("Ссылка недействительна.")
